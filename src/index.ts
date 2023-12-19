@@ -36,7 +36,7 @@ server.listen(port, () => {
 
 // database
 mongoose.Promise = Promise;
-mongoose.connect(process.env.DB_URL ?? "");
+mongoose.connect(process.env.DATABASE_URL ?? "");
 mongoose.connection.on("error", (error: Error) => console.log(error));
 
 // routers
