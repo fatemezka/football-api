@@ -1,12 +1,12 @@
 import mongoose from "mongoose";
 
 const userSchema = new mongoose.Schema({
-  username: { type: string, required: true },
-  email: { type: string, required: true },
+  username: { type: String, required: true },
+  email: { type: String, required: true },
   authentication: {
-    password: { type: string, required: true, select: false },
-    salt: { type: string, select: false },
-    session_token: { type: string, select: false },
+    password: { type: String, required: true, select: false },
+    salt: { type: String, select: false },
+    session_token: { type: String, select: false },
   },
 });
 
