@@ -1,5 +1,5 @@
 import { Request, Response, NextFunction } from "express";
-import { merge } from "lodash";
+import { merge, get } from "lodash";
 
 import { getUserBySessionToken } from "../database/UserModel";
 
@@ -18,6 +18,26 @@ export const isAuthenticated = async (
     if (!current_user) return res.sendStatus(403);
 
     merge(req, { current_user });
+
+    return next();
+  } catch (error) {
+    console.log(error);
+    return res.sendStatus(400);
+  }
+};
+
+export const isOwner = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const { id } = req.params;
+    let current_user_id = get(req, "current_user._id");
+
+    if (!current_user_id) return res.sendStatus(403);
+    
+    if (id != current_user_id) return res.sendStatus(403);
 
     return next();
   } catch (error) {
