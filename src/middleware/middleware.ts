@@ -1,5 +1,5 @@
 import { Request, Response, NextFunction } from "express";
-import { get, merge } from "lodash";
+import { merge } from "lodash";
 
 import { getUserBySessionToken } from "../database/UserModel";
 

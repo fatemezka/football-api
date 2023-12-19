@@ -1,8 +1,13 @@
 import express from "express";
-import {register} from "../controller/user/register";
-import {login} from "../controller/user/login";
+
+import { isAuthenticated } from "../middleware/middleware";
+
+import { getAll } from "../controller/user/getAll";
+import { register } from "../controller/user/register";
+import { login } from "../controller/user/login";
 
 export default (router: express.Router) => {
-    router.post("/user/register", register);
-    router.post("/user/login", login);
+  router.get("/user/all", isAuthenticated, getAll);
+  router.post("/user/register", isAuthenticated, register);
+  router.post("/user/login", isAuthenticated, login);
 };
