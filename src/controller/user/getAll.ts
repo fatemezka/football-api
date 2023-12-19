@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import { getUsers } from "../../database/UserModel";
+import { getUsers } from "../../model/User";
 
 export const getAll = async (_: Request, res: Response) => {
   try {
@@ -7,7 +7,6 @@ export const getAll = async (_: Request, res: Response) => {
 
     return res.status(200).json(users).end();
   } catch (error) {
-    console.log(error);
-    return res.sendStatus(400);
+    return res.status(400).send(error).end();
   }
 };

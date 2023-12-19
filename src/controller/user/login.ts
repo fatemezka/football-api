@@ -1,44 +1,34 @@
 import { Request, Response } from "express";
-import { getUserByEmail } from "../../database/UserModel";
-import { authentication, random } from "../../tools/authentication";
+import Bcrypt from "bcrypt";
+import jwt from "jsonwebtoken";
+import { getUserByEmail } from "../../model/User";
 
 export const login = async (req: Request, res: Response) => {
   try {
-    const { email, password } = req.body;
+    let { email, password } = req.body;
 
-    if (!email || !password) return res.sendStatus(400);
+    if (!email || !password) {
+      // will be removed by joi
+      return res.sendStatus(400);
+    }
+    email = email.toLowerCase();
 
-    // check if user does exist
-    const user = await getUserByEmail(email).select(
-      "+authentication.salt +authentication.password"
-    );
-    if (!user) return res.sendStatus(400);
-
-    const expected_hash = authentication(
-      user.authentication?.salt ?? "",
-      password
-    );
-    if (expected_hash !== user.authentication?.password) res.sendStatus(403);
-
-    // set session_token for current user
-    let salt = random();
-    if (user.authentication) {
-      user.authentication.session_token = authentication(
-        salt,
-        user._id.toString()
-      );
-      await user.save();
+    // check user existence
+    const user = await getUserByEmail(email).select("+authentication.password");
+    if (!user) {
+      return res.status(400).send("User does not exist.");
     }
 
-    // set cookie
-    res.cookie("FATEME-AUTH", user.authentication?.session_token, {
-      domain: "localhost",
-      path: "/",
+    password = await Bcrypt.hash(password, process.env.BCRYPT_SALT ?? "");
+    if (user.password !== password)
+      res.status(403).send("Password is not correct.");
+
+    const token = jwt.sign({ userId: user._id }, "your-secret-key", {
+      expiresIn: "1h",
     });
 
     return res.status(200).json(user).end();
   } catch (error) {
-    console.log(error);
-    return res.sendStatus(400);
+    return res.status(400).send(error).end();
   }
 };

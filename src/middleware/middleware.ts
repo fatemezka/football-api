@@ -1,7 +1,7 @@
 import { Request, Response, NextFunction } from "express";
 import { merge, get } from "lodash";
 
-import { getUserBySessionToken } from "../database/UserModel";
+import { getUserBySessionToken } from "../model/User";
 
 export const isAuthenticated = async (
   req: Request,
@@ -21,8 +21,7 @@ export const isAuthenticated = async (
 
     return next();
   } catch (error) {
-    console.log(error);
-    return res.sendStatus(400);
+    return res.status(400).send(error).end();
   }
 };
 
@@ -41,7 +40,6 @@ export const isOwner = async (
 
     return next();
   } catch (error) {
-    console.log(error);
-    return res.sendStatus(400);
+    return res.status(400).send(error).end();
   }
 };

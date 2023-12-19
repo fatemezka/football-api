@@ -1,16 +1,21 @@
 import { Request, Response } from "express";
-import Bcrypt, { hash } from "bcrypt";
-import { getUserByEmail, createUser } from "../../database/UserModel";
+import Bcrypt from "bcrypt";
+import { getUserByEmail, createUser } from "../../model/User";
 
 export const register = async (req: Request, res: Response) => {
   try {
     const { username, email, password } = req.body;
 
-    if (!username || !email || !password) return res.sendStatus(400);
+    // will be removed by joi
+    if (!username || !email || !password) {
+      return res.sendStatus(400);
+    }
 
     // check email does not exist
-    const existingEmail = await getUserByEmail(email);
-    if (existingEmail) return res.sendStatus(400);
+    const existing_email = await getUserByEmail(email);
+    if (existing_email) {
+      return res.status(400).send("This email does exist.");
+    }
 
     const hashed_password = await Bcrypt.hash(
       password,
@@ -23,9 +28,9 @@ export const register = async (req: Request, res: Response) => {
       email,
       hashed_password,
     });
+
     return res.status(200).json(user).end();
   } catch (error) {
-    console.log(error);
-    return res.sendStatus(400);
+    return res.status(400).send(error).end();
   }
 };

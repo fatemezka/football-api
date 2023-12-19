@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import { deleteUserById } from "../../database/UserModel";
+import { deleteUserById } from "../../model/User";
 
 export const deleteUser = async (req: Request, res: Response) => {
   try {
@@ -8,7 +8,6 @@ export const deleteUser = async (req: Request, res: Response) => {
 
     return res.json(deleted_user).end();
   } catch (error) {
-    console.log(error);
-    return res.sendStatus(400);
+    return res.status(400).send(error).end();
   }
 };
