@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
 import Bcrypt from "bcrypt";
-import jwt from "jsonwebtoken";
 import { getUserByEmail } from "../../model/User";
+import { generateAccessToken } from "../../tool/jwt";
 
 export const login = async (req: Request, res: Response) => {
   try {
@@ -23,11 +23,10 @@ export const login = async (req: Request, res: Response) => {
     if (user.password !== password)
       res.status(403).send("Password is not correct.");
 
-    const token = jwt.sign({ userId: user._id }, "your-secret-key", {
-      expiresIn: "1h",
-    });
+    // jwt access token
+    const token = generateAccessToken(user._id.toString(), email);
 
-    return res.status(200).json(user).end();
+    return res.status(200).json({ user, access_token: token }).end();
   } catch (error) {
     return res.status(400).send(error).end();
   }

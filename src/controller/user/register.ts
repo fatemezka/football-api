@@ -1,6 +1,7 @@
 import { Request, Response } from "express";
 import Bcrypt from "bcrypt";
 import { getUserByEmail, createUser } from "../../model/User";
+import { generateAccessToken } from "../../tool/jwt";
 
 export const register = async (req: Request, res: Response) => {
   try {
@@ -29,7 +30,10 @@ export const register = async (req: Request, res: Response) => {
       hashed_password,
     });
 
-    return res.status(200).json(user).end();
+    // jwt access token
+    const token = generateAccessToken(user._id.toString(), email);
+
+    return res.status(200).json({ user, access_token: token }).end();
   } catch (error) {
     return res.status(400).send(error).end();
   }
